@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="main.css">
+    <script src="jquery-1.8.3.js"></script>
+    <title>Скрипка 345</title>
+</head>
+
+<body>
+    <label style="float:left;">Высота:</label>
+    <input type="text" id="vis" value="10" name="height" autofocus="autofocus" maxlength="2" size="6" />
+    <br>
+    <label style="float:left;">Ширина:</label>
+    <input type="text" id="shir" value="10" name="width" maxlength="2" size="6" />
+    <br>
+    <input type="button" alt="submit" onClick="dannie();" value="Новый" style="margin-top:10px;">
+    <pre id="out"></pre>
+
+    <canvas id="canv" width="600" height="600"></canvas>
+    <script>
+        var canvas = document.getElementById('canv'); // получаем элемент, в котором будем рисовать
+
+        var ctx = canvas.getContext('2d'); // производим отрисовку в двумерной плоскости
+
+        function dannie() {
+
+            var visota = parseInt(document.getElementById("vis").value);
+            var shirina = parseInt(document.getElementById("shir").value);
+
+            document.getElementById('out').innerHTML = display(maze(visota, shirina));
+        }
+
+        function maze(x, y) {
+            var n = x * y - 1;
+            if (n < 0) {
+                alert("Плохие данные");
+                return;
+            }
+            var horiz = [];
+            for (var j = 0; j < x + 1; j++) horiz[j] = [];
+            var verti = [];
+            for (var j = 0; j < y + 1; j++) verti[j] = [];
+
+            var here = [Math.floor(Math.random() * x), Math.floor(Math.random() * y)];
+            var path = [here];
+            var unvisited = [];
+            for (var j = 0; j < x + 2; j++) {
+                unvisited[j] = [];
+                for (var k = 0; k < y + 1; k++)
+                    unvisited[j].push(j > 0 && j < x + 1 && k > 0 && (j != here[0] + 1 || k != here[1] + 1));
+            }
+            while (0 < n) {
+                var potential = [
+                    [here[0] + 1, here[1]],
+                    [here[0], here[1] + 1],
+                    [here[0] - 1, here[1]],
+                    [here[0], here[1] - 1]
+                ];
+                var neighbors = [];
+                for (var j = 0; j < 4; j++)
+                    if (unvisited[potential[j][0] + 1][potential[j][1] + 1])
+                        neighbors.push(potential[j]);
+                if (neighbors.length) {
+                    n = n - 1;
+                    next = neighbors[Math.floor(Math.random() * neighbors.length)];
+                    unvisited[next[0] + 1][next[1] + 1] = false;
+                    if (next[0] == here[0])
+                        horiz[next[0]][(next[1] + here[1] - 1) / 2] = true;
+                    else
+                        verti[(next[0] + here[0] - 1) / 2][next[1]] = true;
+                    path.push(here = next);
+                } else
+                    here = path.pop();
+            }
+            return ({
+                x: x,
+                y: y,
+                horiz: horiz,
+                verti: verti
+            });
+        }
+
+
+        function drawField() {
+            ctx.clearRect(0, 0, 600, 600);
+            for (var i = 0; i < n; i++) {
+                for (var j = 0; j < m; j++) {
+                    if (mas[i][j] == 1) {
+                        ctx.fillRect(j * 10, i * 10, 10, 10);
+                    }
+                }
+            }
+        }
+
+
+        function display(m) {
+            var text = [];
+            ctx.clearRect(0, 0, 600, 600);
+            for (var j = 0; j < m.x * 2 + 1; j++) {
+                var line = [];
+
+                if (0 == j % 2)
+                    for (var k = 0; k < m.y * 4 + 1; k++)
+                        if (0 == k % 4)
+                            line[k] = '+';
+                        else
+                if (j > 0 && m.verti[j / 2 - 1][Math.floor(k / 4)])
+                    line[k] = ' ';
+                else
+                    line[k] = '+';
+                else
+                    for (var k = 0; k < m.y * 4 + 1; k++)
+                        if (0 == k % 4)
+                            if (k > 0 && m.horiz[(j - 1) / 2][k / 4 - 1])
+                                line[k] = ' ';
+                            else
+                                line[k] = '+';
+                else
+                    line[k] = ' ';
+                if (0 == j) line[1] = line[3] = ' ', line[2] = '1';
+                if (m.x * 2 - 1 == j) line[4 * m.y] = '2';
+                text.push(line.join('') + '\n');
+
+            }
+            return text.join('');
+        }
+
+    </script>
+</body>
+
+</html>

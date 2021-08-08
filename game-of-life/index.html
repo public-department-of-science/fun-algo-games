@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="main.css">
+    <script src="jquery-1.8.3.js"></script>
+    <title>Скрипка 345</title>
+</head>
+
+<body>
+    <canvas id="canv" width="600" height="600"></canvas>
+    <p>Итерация: <span id="count">0</span></p>
+    <button id="start">Start</button>
+    <button id="random">Random</button>
+
+    <script>
+        var canvas = document.getElementById('canv'); // получаем элемент, в котором будем рисовать
+        var random = document.getElementById('random'); // получаем элемент, который генерирует случайным образом элементы
+        var ctx = canvas.getContext('2d'); // производим отрисовку в двумерной плоскости
+        var mas = []; // массив точек
+        var count = 0; // счетчик итераций
+        var timer; // таймер обновления области
+        var n = 60, // ширина
+            m = 60; // высота
+
+        //  ЗАДАНИЕ ПЕРВОГО ПОКОЛЕНИЯ
+        canvas.onclick = function(event) { // событие клик по области отрисовки
+            var x = event.offsetX;
+            var y = event.offsetY;
+            console.log(x);
+            console.log(y);
+            x = Math.floor(x / 10);
+            y = Math.floor(y / 10);
+            mas[y][x] = 1;
+            console.log(mas);
+            drawField();
+        }
+        random.onclick = function() {
+            var totalCount = 500;
+            console.log(totalCount);
+            for (var i = 0; i < totalCount; i++) {
+                var x = Math.floor(Math.round((Math.random() * 599) + 1) / 10)
+                console.log(x);
+                var y = Math.floor(Math.round((Math.random() * 599) + 1) / 10)
+                console.log(y);
+                mas[y][x] = 1;
+            }
+            console.log(mas);
+            drawField();
+        }
+
+        /// Создание массива хранящего точки-координаты
+        function goLife() {
+
+            for (var i = 0; i < m; i++) {
+                mas[i] = [];
+                for (var j = 0; j < n; j++) {
+                    mas[i][j] = 0;
+                }
+            }
+        }
+
+        goLife();
+
+        // функция росующая квадрат 10*10 писелей в указанной позиции
+        function drawField() {
+            ctx.clearRect(0, 0, 600, 600);
+            for (var i = 0; i < n; i++) {
+                for (var j = 0; j < m; j++) {
+                    if (mas[i][j] == 1) {
+                        ctx.fillRect(j * 10, i * 10, 10, 10);
+                    }
+                }
+            }
+        }
+
+        // функция - ЖИЗНИ
+        function startLife() {
+            //моделирование жизни
+            var mas2 = []; // для новорожденных клеток
+            var mas3 = []; // для  тех, кто не умер
+            //ИЩЕМ НОВЫЕ КЛЕТКИ
+            for (var i = 0; i < n; i++) {
+                mas2[i] = [];
+                mas3[i] = [];
+                for (var j = 0; j < m; j++) {
+                    var neighbors = 0;
+                    if (mas[fpm(i) - 1][j] == 1) neighbors++; //// соседи сверху
+                    if (mas[i][fpp(j) + 1] == 1) neighbors++; // соседи справа
+                    if (mas[fpp(i) + 1][j] == 1) neighbors++; //соседи снизу
+                    if (mas[i][fpm(j) - 1] == 1) neighbors++; //слева
+
+
+                    /// условия по диагонали 
+                    if (mas[fpm(i) - 1][fpp(j) + 1] == 1) neighbors++; //справа вверх
+                    if (mas[fpp(i) + 1][fpp(j) + 1] == 1) neighbors++; //справа вниз
+                    if (mas[fpp(i) + 1][fpm(j) - 1] == 1) neighbors++; //слева вниз
+                    if (mas[fpm(i) - 1][fpm(j) - 1] == 1) neighbors++; //слева вверх
+                    // тернарное условие проверки соседей
+                    // проверка условий игры
+                    (neighbors == 3) ? mas2[i][j] = 1: mas2[i][j] = 0;
+
+                    // обнулили счетчик соседей
+                    neighbors = 0;
+                    // ИЩЕМ ТЕХ, КТО НЕ УМРЕЕЕТТТ (2 || 3)
+                    if (mas[i][j] == 1) {
+                        if (mas[fpm(i) - 1][j] == 1) neighbors++; //// соседи сверху
+                        if (mas[i][fpp(j) + 1] == 1) neighbors++; // соседи справа
+                        if (mas[fpp(i) + 1][j] == 1) neighbors++; //соседи снизу
+                        if (mas[i][fpm(j) - 1] == 1) neighbors++; //слева
+
+                        /// условия по диагонали 
+                        if (mas[fpm(i) - 1][fpp(j) + 1] == 1) neighbors++; //справа вверх
+                        if (mas[fpp(i) + 1][fpp(j) + 1] == 1) neighbors++; //справа вниз
+                        if (mas[fpp(i) + 1][fpm(j) - 1] == 1) neighbors++; //слева вниз
+                        if (mas[fpm(i) - 1][fpm(j) - 1] == 1) neighbors++; //слева вверх
+                        // тернарное условие проверки соседей
+                        // проверка условий игры
+                        (neighbors == 3 || neighbors == 2) ? mas3[i][j] = 1: mas3[i][j] = 0;
+                    }
+                }
+            }
+
+            mas = mas2;
+            for (var i = 0; i < n; i++) {
+                for (var j = 0; j < m; j++) {
+                    if (mas3[i][j] == 1) {
+                        mas[i][j] = mas3[i][j];
+                    }
+                }
+            }
+            drawField();
+            count++; // поколение
+            document.getElementById('count').innerHTML = count;
+            timer = setTimeout(startLife, 1000); // установка тыймера 
+        }
+
+
+
+        function fpm(i) { // функция передающая значение ячейки, если==0, значит перемещение в другой конец области ПРИ ДВИЖЕНИЕ ПО ВЕРТИКАЛИ 
+            if (i == 0) return n;
+            else return i;
+        }
+
+        function fpp(i) { // функция передающая значение ячейки, если==0, значит перемещение в другой конец области ПРИ ДВИЖЕНИЕ ПО ГОРИЗОНТАЛИ
+            if (i == (m - 1)) return -1;
+            else return i;
+        }
+
+        document.getElementById('start').onclick = startLife; // событие по клику
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>PathFinding.js</title>
+
+    <link rel="stylesheet" href="js/style.css" />
+    <link rel="stylesheet" href="js/jquery.ui.all.css" />
+
+    <script type="text/javascript" src="js/raphael-min.js"></script>
+    <script type="text/javascript" src="js/es5-shim.min.js"></script>
+    <script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="js/state-machine.min.js"></script>
+    <script type="text/javascript" src="js/async.min.js"></script>
+
+    <script type="text/javascript" src="js/jquery.ui.core.min.js"></script>
+    <script type="text/javascript" src="js/jquery.ui.widget.min.js"></script>
+    <script type="text/javascript" src="js/jquery.ui.mouse.min.js"></script>
+    <script type="text/javascript" src="js/jquery.ui.draggable.min.js"></script>
+    <script type="text/javascript" src="js/jquery.ui.accordion.min.js"></script>
+    <script type="text/javascript" src="js/jquery.ui.slider.min.js"></script>
+
+    <script type="text/javascript" src="js/pathfinding-browser.min.js"></script>
+
+    <script type="text/javascript" src="js/view.js"></script>
+    <script type="text/javascript" src="js/controller.js"></script>
+    <script type="text/javascript" src="js/panel.js"></script>
+    <script type="text/javascript" src="js/main.js"></script>
+</head>
+<body>
+    <div id="draw_area">
+    </div>
+
+    <div id="algorithm_panel" class="panel right_panel">
+        <div class="accordion">
+            <h3 id="breadthfirst_header"><a href="#" style="color: red;">search-in-breadth</a></h3>
+            <div id="breadthfirst_section" class="finder_section">
+            </div>
+        </div>
+    </div>
+
+
+    <div id="play_panel" class="panel right_panel">
+        <button id="button1" class="control_button">Start</button>
+        <button id="button2" class="control_button">Pause</button>
+        <button id="button3" class="control_button">Clear</button>
+    </div>
+</body>
+</html>

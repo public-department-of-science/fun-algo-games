@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="main.css">
+    <script src="jquery-1.8.3.js"></script>
+    <title>Скрипка 345</title>
+</head>
+
+<body>
+    <div class="stat">
+        steps:<span id="step">0</span> complete: <span id="complete">0</span>
+        <input id="width" type="number" value="50">
+        <input id="height" type="number" value="50">
+    </div>
+    <canvas id="canvas" style="background:#eee"></canvas>
+    <script>
+        (function mapGen(b, width, height, a, m) {
+            // Функция управления персонажем
+            function character(a, b) {
+                // Получаем цвет пикселя из промежутка между текущей ячейкой и той, в сторону которой персонаж должен передвинуться
+                var h = d.getImageData(13 * f + 7 + 6 * a, 13 * g + 7 + 6 * b, 1, 1);
+                0 == h.data[0] && 0 == h.data[1] && 0 == h.data[2] && 255 == h.data[3] ? a = b = 0 : document.querySelector("#step").innerHTML = Math.floor(document.querySelector("#step").innerHTML) + 1;
+                // Закрашиваем персонажа
+                d.clearRect(13 * f + 3, 13 * g + 3, 10, 10);
+                // Меняем его текушие координаты
+                f += a;
+                g += b;
+                // Вновь отрисовываем его
+                d.fillRect(3 + 13 * f, 3 + 13 * g, 10, 10);
+                // Если персонаж вышел за пределы лабиринта, то генерируем новый лабиринт и начинаем игру сначала
+                f >= width && mapGen("#canvas", width, height, 0, m + 1)
+            }
+
+            // Выбираем область рисования
+            b = document.querySelector(b);
+            var d = b.getContext("2d");
+            // И вписываем количество шагов и пройденных лабиринтов
+            document.querySelector("#step").innerHTML = Math.floor(a);
+            // Зададим ширину и высоту области лабиринта
+            b.width = 40 * width + 3;
+            b.height = 40 * height + 3;
+            // И закрасим в черный цвет
+            d.fillStyle = "black";
+            d.fillRect(0, 0, 13 * width + 3, 13 * height + 3);
+
+            // Объявим массивы для хранения значения множества текущей ячейки, для значения стенки справа и для значения стенки снизу
+            a = Array(width);
+            b = Array(width);
+            var k = Array(width),
+                // Текущее множество
+                q = 1;
+
+            // Цикл по строкам
+            for (cr_l = 0; cr_l < height; cr_l++) {
+                // Проверка принадлежности ячейки в строке к какому-либо множеству        
+                for (i = 0; i < width; i++)
+                    0 == cr_l && (a[i] = 0), d.clearRect(13 * i + 3, 13 * cr_l + 3, 10, 10), k[i] = 0, 1 == b[i] && (b[i] = a[i] = 0), 0 == a[i] && (a[i] = q++);
+
+                // Создание случайным образом стенок справа и снизу
+                for (i = 0; i < width; i++) {
+                    k[i] = Math.floor(2 * Math.random()), b[i] = Math.floor(2 * Math.random());
+
+                    if ((0 == k[i] || cr_l == height - 1) && i != width - 1 && a[i + 1] != a[i]) {
+                        var l = a[i + 1];
+                        for (j = 0; j < width; j++) a[j] == l && (a[j] = a[i]);
+                        d.clearRect(13 * i + 3, 13 * cr_l + 3, 15, 10)
+                    }
+                    cr_l != height - 1 && 0 == b[i] && d.clearRect(13 * i + 3, 13 * cr_l + 3, 10, 15)
+                }
+
+                // Проверка на замкнутые области.
+                for (i = 0; i < width; i++) {
+                    var p = l = 0;
+                    for (j = 0; j < width; j++) a[i] == a[j] && 0 == b[j] ? p++ : l++;
+                    0 == p && (b[i] = 0, d.clearRect(13 * i + 3, 13 * cr_l + 3, 10, 15))
+                }
+            }
+
+            // Рисуем выход из лабиринта
+            d.clearRect(13 * width, 3, 15, 10);
+            // Обнуляем текущие координаты персонажа
+            var f = 0,
+                g = 0;
+            // Задаем цвет
+            d.fillStyle = "#4c0084";
+
+            // получаем все пиксели изображения
+            var imageData = d.getImageData(0, 0, canvas.width, canvas.height);
+            var pixels = imageData.data;
+            debugger;
+            // И ставим персонажа в начало лабиринта
+            character(-1, -1);
+            // Ожидаем нажатия стрелок
+            document.body.onkeydown = function(a) {
+                36 < a.keyCode && 41 > a.keyCode && character((a.keyCode - 38) % 2, (a.keyCode - 39) % 2)
+            }
+        })("#canvas", document.getElementById('height').value, document.getElementById('width').value, 0, 0);
+
+    </script>
+</body>
+
+</html>
